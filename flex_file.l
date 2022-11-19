@@ -99,10 +99,6 @@ columns += yyleng; unmatched = 0;}
 {float} {fprintf(yyout, "%s       FLOAT   LINHA %d    INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yylineno, columns, columns + yyleng - 1);
     columns += yyleng; unmatched = 0;}
 
-
-{single_comment} {fprintf(yyout, "%s       COMMENT   LINE %d     INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yylineno, columns, columns + yyleng - 1);
-    columns += yyleng; unmatched = 0;}
-
     /*
     A próxima regra contabiliza o número de espaços em branco entre palavras/tokens, adicionando esse número à variável columns para que
     a contabilização de colunas permaneça correta. 
