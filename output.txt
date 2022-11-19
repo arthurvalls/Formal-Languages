@@ -1,3 +1,25 @@
-teste2       IDENTIFICADOR   LINHA 2     INICIO COLUNA 5     FIM COLUNA 10
-teste3       IDENTIFICADOR   LINHA 3     INICIO COLUNA 9     FIM COLUNA 14
-newtest_new_new       IDENTIFICADOR   LINHA 6     INICIO COLUNA 1     FIM COLUNA 15
+id3nt_       IDENTIFICADOR   LINHA: 1     COLUNA_INICIO: 1     
+iDeNt_IDENT       IDENTIFICADOR   LINHA: 2     COLUNA_INICIO: 1     
+_idneT       IDENTIFICADOR   LINHA: 3     COLUNA_INICIO: 1     
+0       INTEIRO   LINHA: 4     COLUNA_INICIO: 1     
+22       INTEIRO   LINHA: 4     COLUNA_INICIO: 2     
+222       INTEIRO   LINHA: 5     COLUNA_INICIO: 1     
+-123       INTEIRO   LINHA: 6     COLUNA_INICIO: 1     
+-0       INTEIRO   LINHA: 7     COLUNA_INICIO: 1     
+123       INTEIRO   LINHA: 7     COLUNA_INICIO: 3     
+0.123       FLOAT   LINHA: 8    COLUNA_INICIO: 1     
+-0.123       FLOAT   LINHA: 9    COLUNA_INICIO: 1     
+-1.123       FLOAT   LINHA: 10    COLUNA_INICIO: 1     
+inv       IDENTIFICADOR   LINHA: 11     COLUNA_INICIO: 1     
+Erro lexico (lexema desconhecido) na linha: 11, coluna: 4 .
+lido       IDENTIFICADOR   LINHA: 11     COLUNA_INICIO: 5     
++       OPERADOR BINARIO   LINHA: 12    COLUNA_INICIO: 1     
+-       OPERADOR BINARIO   LINHA: 13    COLUNA_INICIO: 1     
+==       OPERADOR BINARIO   LINHA: 14    COLUNA_INICIO: 1     
+!=       OPERADOR BINARIO   LINHA: 15    COLUNA_INICIO: 1     
+=       =     LINHA: 16     COLUNA_INICIO: 1     
+id       IDENTIFICADOR   LINHA: 17     COLUNA_INICIO: 1     
+=       =     LINHA: 17     COLUNA_INICIO: 4     
+-5       INTEIRO   LINHA: 17     COLUNA_INICIO: 6     
+true    true     LINHA: 20     COLUNA_INICIO: 1     
+false    false     LINHA: 20     COLUNA_INICIO: 8     

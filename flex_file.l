@@ -2,16 +2,22 @@
     Arthur Valls da Costa Silva - 120177470
     Bernardo Afonso Nunes - 121167931
     Julia Turazzi Almeida - 120188861
+
+
+    comando para compilar e executar o programa de uma vez só:
+    
+    flex flex_file.l && gcc -o flex_file lex.yy.c -ll && ./flex_file
+
     */
 %{
 #include <stdio.h>
 #include <string.h>
 int columns = 1; /* Contador de colunas */
-int unmatched = 1; /* Flag para saber se o token lido possui regex correspondente,
+int unmatched = 1; /* Flag para saber se o lexema lido possui regex correspondente,
                       1 para unmatched (não existe regex correspondente) e 0 para matched (existe regex correspondente) */
 %}
 
-/* yylineno indica a linha do token lido */
+/* yylineno indica a linha do lexema lido */
 %option yylineno
 
 /* Estado para fazer a lógica de comentários aninhados */
@@ -26,8 +32,9 @@ ID ({LETRA}|{DIGITO}|_)
 LETRA ([a-z]|[A-Z])
 whitespace    (\t|" "|\r)
 float       -?{DIGITO}+\.{DIGITO}+
-integer      (0|[1-9]{DIGITO}*)
+integer      -?(0|[1-9]{DIGITO}*)
 identifier        ({LETRA}|_){ID}*
+binary_operator ("+"|"-"|"=="|"!=")
 comment "/*"([^*]|\*+[^*/])*\*+"/"
 single_comment \/[\/]+.*
 nested_comment (\/\*(?:(?!\/\*|\*\/).|(?1))*\*\/)|((?:(?!(?1)).)+)
@@ -65,39 +72,41 @@ reserved ("if"|"else"|"while"|"var"|"return"|"fn"|"bool"|"int"|"float"|"true"|"f
     /* 
     As próximas 6 regras basicamente seguem o mesmo formato:
 
-        A função yylex() lerá o token do arquivo input.txt e escreverá no arquivo output.txt a seguinte tupla:
+        A função yylex() lerá o lexema do arquivo input.txt e escreverá no arquivo output.txt a seguinte tupla:
 
-            TOKEN    TIPO DO TOKEN     LINHA      INICIO COLUNA      FIM COLUNA
-        
+            LEXEMA    TIPO DO TOKEN     LINHA      COLUNA_INICIO          
+              
         Com a exceção do TIPO DO TOKEN, que é reconhecido pela própria regra utilizando as regex's que estabelecemos anteriormente,
         cada elemento da tupla é substituído/seguido por sua variável correspondente:
 
-            yytext: representa o token
-            yylineno: representa a linha na qual o token se encontra
-            columns: representa a coluna na qual o token começa
-            columns + yyleng - 1: representa a conta feita para indicar qual coluna o token termina (yyleng corresponde ao tamanho de caracteres do token)
+            yytext: representa o lexema
+            yylineno: representa a linha na qual o lexema se encontra
+            columns: representa a coluna na qual o lexema começa
 
-        Para que a contagem de colunas aconteça, a cada token lido incrementamos o valor correspondente ao tamanho do token à variável columns.
-        Caso o token seja lido, significa que ele possui regex correspondente em nosso código, e a flag de correspondencia é mudada para 0 (possui regex correspondente)
+        Para que a contagem de colunas aconteça, a cada lexema lido incrementamos o valor correspondente ao tamanho do lexema à variável columns.
+        Caso o lexema seja lido, significa que ele possui regex correspondente em nosso código, e a flag de correspondencia é mudada para 0 (possui regex correspondente)
     */ 
-{reserved} {fprintf(yyout, "%s    %s     LINHA %d     INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yytext, yylineno, columns, columns + yyleng - 1);
+{reserved} {fprintf(yyout, "%s    %s     LINHA: %d     COLUNA_INICIO: %d     \n", yytext, yytext, yylineno, columns);
 columns += yyleng; unmatched = 0;}
 
 
-{char_reserved} {fprintf(yyout, "%s       %s     LINHA %d     INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yytext, yylineno, columns, columns + yyleng - 1);
+{char_reserved} {fprintf(yyout, "%s       %s     LINHA: %d     COLUNA_INICIO: %d     \n", yytext, yytext, yylineno, columns);
 columns += yyleng; unmatched = 0;}
 
 
-{identifier} {fprintf(yyout, "%s       IDENTIFICADOR   LINHA %d     INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yylineno, columns, columns + yyleng - 1);
+{identifier} {fprintf(yyout, "%s       IDENTIFICADOR   LINHA: %d     COLUNA_INICIO: %d     \n", yytext, yylineno, columns);
         columns += yyleng; unmatched = 0;}
 
 
-{integer} {fprintf(yyout, "%s       INTEIRO   LINHA %d     INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yylineno, columns, columns + yyleng - 1);
+{integer} {fprintf(yyout, "%s       INTEIRO   LINHA: %d     COLUNA_INICIO: %d     \n", yytext, yylineno, columns);
     columns += yyleng; unmatched = 0;}
 
 
-{float} {fprintf(yyout, "%s       FLOAT   LINHA %d    INICIO COLUNA %d     FIM COLUNA %d\n", yytext, yylineno, columns, columns + yyleng - 1);
+{float} {fprintf(yyout, "%s       FLOAT   LINHA: %d    COLUNA_INICIO: %d     \n", yytext, yylineno, columns);
     columns += yyleng; unmatched = 0;}
+
+{binary_operator} {fprintf(yyout, "%s       OPERADOR BINARIO   LINHA: %d    COLUNA_INICIO: %d     \n", yytext, yylineno, columns);
+    columns += yyleng; unmatched = 0;}    
 
     /*
     A próxima regra contabiliza o número de espaços em branco entre palavras/tokens, adicionando esse número à variável columns para que
@@ -107,11 +116,11 @@ columns += yyleng; unmatched = 0;}
 
 
     /*
-    Similar as primeiras 6 regras, escreveremos uma tupla que contém os 5 elementos solicitados pela professora. Contudo, a seguinte regra só se aplicará
-    para tokens que não possuam regex's correspondentes, ou seja, tokens desconhecidos.
+    Similar as primeiras 6 regras, escreveremos uma tupla que contém os 4 elementos solicitados pela professora. Contudo, a seguinte regra só se aplicará
+    para lexemas que não possuam regex's correspondentes, ou seja, lexemas desconhecidos.
     No final da regra mudaremos o estado de unmatched para 1 (não existe regex correspondente).
     */
-{unmatched} {if(unmatched){fprintf(yyout, "TOKEN DESCONHECIDO LINE %d     INICIO COLUNA %d     FIM COLUNA %d\n", yylineno, columns, columns + yyleng - 1);
+{unmatched} {if(unmatched){fprintf(yyout, "Erro lexico (lexema desconhecido) na linha: %d, coluna: %d \n", yylineno, columns);
     columns += yyleng;} unmatched = 1;}
 %%
 int yywrap()
@@ -130,8 +139,8 @@ int main(){
     return -1;
    }
    
-   yyin = input_file;  /* variável yyin que determina o input para a funcao yylex() recebe o arquivo input.txt */
-   yyout = output_file; /* variável yyout que determina o output para a funcao yylex() recebe o arquivo output.txt */
+   yyin = input_file;  /* variável yyin que determina o input para a funcao yylex(), recebe o arquivo input.txt */
+   yyout = output_file; /* variável yyout que determina o output para a funcao yylex(), recebe o arquivo output.txt */
    
    /*
    Dependendo do seu compilador o formato do %d pode dar erro alegando que a variável a ser printada é um unsigned long int (%lu),
